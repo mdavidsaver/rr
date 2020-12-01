@@ -25,6 +25,9 @@ jobs:
         cmake --version
         sudo sysctl -a | grep perf
         ls -l /proc/{kallsyms,modules}
+        cat /proc/cpuinfo
+        lspci
+        perf list | cat
     - name: Build
       run: cmake -Ddisable32bit=ON . && make -j2
     - name: Check perf permissions
