@@ -1,0 +1,33 @@
+
+name: Build RR
+
+on: [push, pull_request]
+
+jobs:
+  build-ubuntu:
+    name: Build on Ubuntu
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: "apt-get install"
+      run: |
+        sudo apt-get update
+        # cf. https://github.com/rr-debugger/rr/wiki/Building-And-Installing
+        sudo apt-get -y install ccache cmake make g++-multilib gdb \
+                        pkg-config coreutils python3-pexpect manpages-dev git \
+                        ninja-build capnproto libcapnp-dev
+    - name: Configure Builder
+      run: sudo sysctl kernel.perf_event_paranoid=-1
+    - name: Builder Info
+      run: |
+        uname -a
+        gcc --version
+        cmake --version
+        sudo sysctl -a | grep perf
+        ls -l /proc/{kallsyms,modules}
+    - name: Build
+      run: cmake -Ddisable32bit=ON . && make -j2
+    - name: Check perf permissions
+      run: perf record sleep 1
+    - name: Test
+      run: sudo ctest -V
