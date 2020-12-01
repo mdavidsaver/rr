@@ -212,7 +212,7 @@ static ScopedFd start_counter(pid_t tid, int group_fd,
                  "enabled? Try 'perf record'.";
     }
     if (errno == ENOENT) {
-      FATAL() << "Unable to open performance counter with 'perf_event_open'; "
+      FATAL() << "Unable to open performance counter with 'perf_event_open([type="<<attr->type<<"config="<<attr->config<<"], "<<tid<<", -1, "<<group_fd<<", PERF_FLAG_FD_CLOEXEC)'; "
                  "are perf events enabled? Try 'perf record'.";
     }
     FATAL() << "Failed to initialize counter";
